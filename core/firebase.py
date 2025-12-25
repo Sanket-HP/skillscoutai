@@ -1,11 +1,15 @@
 """
 Firebase initialization (Auth + Firestore)
+
+Supports:
+- Local development using firebase_key.json
+- Production (Render) using FIREBASE_SERVICE_ACCOUNT env variable
 """
 
+import os
+import json
 import firebase_admin
 from firebase_admin import credentials, firestore, auth
-
-from core.config import settings
 
 
 # --------------------------------------------------
@@ -13,7 +17,19 @@ from core.config import settings
 # --------------------------------------------------
 
 if not firebase_admin._apps:
-    cred = credentials.Certificate(settings.FIREBASE_CREDENTIALS)
+
+    # 🔹 Production / Render (recommended)
+    firebase_env = os.getenv("FIREBASE_SERVICE_ACCOUNT")
+
+    if firebase_env:
+        # Firebase credentials from environment variable (JSON string)
+        cred_dict = json.loads(firebase_env)
+        cred = credentials.Certificate(cred_dict)
+
+    else:
+        # 🔹 Local development fallback
+        cred = credentials.Certificate("firebase_key.json")
+
     firebase_admin.initialize_app(cred)
 
 
