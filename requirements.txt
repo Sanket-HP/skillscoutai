@@ -7,4 +7,5 @@ python-dotenv
 
 pydantic
 
-python
+python-3.11.9
+
